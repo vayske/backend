@@ -1,6 +1,10 @@
 services:
   web:
-    build: .
+    build:
+      context: .
+      args:
+        PYTHON_VERSION: 3.11
+        USERNAME: "${USER}"
     ports:
       - "8000:5000"
   redis:
