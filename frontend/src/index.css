@@ -1,0 +1,104 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+img {
+  display: block;
+  text-align: center;
+  margin: auto;
+  width: auto;
+  height: 200px;
+}
+
+h1 {
+  text-align: center;
+  margin: auto;
+  color: #55bdee;
+}
+
+li {
+  list-style: none;
+}
+
+#image-list {
+  display: block;
+}
+
+#image-tag {
+  margin: 1%;
+}
+
+#image-process {
+  display: block;
+  text-align: center;
+  margin: auto;
+}
+
+#submit-button {
+  display: block;
+  text-align: center;
+  margin: auto;
+}
+
+#form-file-upload {
+  margin: auto;
+  height: 16rem;
+  width: 28rem;
+  max-width: 100%;
+  text-align: center;
+  position: relative;
+}
+
+#input-file-upload {
+  display: none;
+}
+
+#label-file-upload {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-width: 4px;
+  border-radius: 1rem;
+  border-style: solid;
+  border-color: #55bdee;
+  background-color: #f8fafc;
+}
+
+.upload-button {
+  cursor: pointer;
+  padding: 0.25rem;
+  font-size: 1rem;
+  border: none;
+  font-family: 'Oswald', sans-serif;
+  background-color: transparent;
+}
+
+.upload-button:hover {
+  text-decoration-line: underline;
+}
+
+#label-file-upload.drag-active {
+  background-color: #ffffff;
+}
+
+#drag-file-element {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 1rem;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+}
