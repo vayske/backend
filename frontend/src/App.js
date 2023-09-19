@@ -95,7 +95,7 @@ function App() {
 
   console.log(tags.current);
 
-  if (images.length == 0) {
+  if (images.length === 0) {
     return (
       <>
         <h1>吊图管理工具</h1>
