@@ -7,11 +7,11 @@ async fn hello() -> impl Responder {
 
 #[post("/upload")]
 async fn echo(req_body: String) -> impl Responder {
-    HttpResponse::Ok().body(req_body)
+    HttpResponse::Ok().append_header(("Access-Control-Allow-Origin", "*")).body(req_body)
 }
 
 async fn manual_hello() -> impl Responder {
-    HttpResponse::Ok().append_header(("Access-Control-Allow-Origin", "*")).body("Hey there!")
+    HttpResponse::Ok().body("Hey there!")
 }
 
 #[actix_web::main]

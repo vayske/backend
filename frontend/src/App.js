@@ -135,12 +135,11 @@ function UploadToServer({ tags, setState }) {
       method: 'POST',
       body: fd,
       headers: {
-        'Content-Type': 'multipart/form-data'
+         'Content-Type': 'multipart/form-data'
       }
     })
-      .then(response => console.log(response.json()))
-      .then(d => console.log(d));
-
+      .then(response => response.json())
+      .then(text => console.log(text))
   }
 
   for (const tag in tags) {
