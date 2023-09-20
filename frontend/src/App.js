@@ -48,22 +48,60 @@ function DragDropFile({ handleFile }) {
   );
 };
 
+function MainMenu({ setState }) {
+  const [saveClick, setSaveClick] = useState(false);
+  const [searchClick, setSearchClick] = useState(false);
+
+  const handleMouseDown = e => {
+    if (e.target.closest("#label-button[for=input-save-stamps]")) {
+      setSaveClick(true);
+    } else if (e.target.closest("#label-button[for=input-search-stamps]")) {
+      setSearchClick(true);
+    }
+  }
+
+  const handleMouseUp = e => {
+    if (e.target.closest("#label-button[for=input-save-stamps]")) {
+      setSaveClick(false);
+    } else if (e.target.closest("#label-button[for=input-search-stamps]")) {
+      setSearchClick(false);
+    }
+  }
+
+  const handleChange = e => {
+    if (e.target.closest("#label-button[for=input-save-stamps]")) {
+      setState();
+    } else if (e.target.closest("#label-button[for=input-search-stamps]")) {
+      setState();
+    }
+  }
+
+  return (
+    <div id="main-menu">
+      <div id="title">
+        <h1 id="main-title">Meme Tool</h1>
+      </div>
+      <div id="menu-button">
+        <input type="button" id="input-save-stamps" />
+        <label id="label-button" htmlFor="input-save-stamps" onClick={handleChange} onMouseLeave={handleMouseUp} onMouseDownCapture={handleMouseDown} onMouseUpCapture={handleMouseUp} className={saveClick ? "menu-click" : "menu-idle"  }>
+          <p>Save Stamps</p>
+        </label>
+        <input type="button" id="input-search-stamps" />
+        <label id="label-button" htmlFor="input-search-stamps" onMouseLeave={handleMouseUp} onMouseDownCapture={handleMouseDown} onMouseUpCapture={handleMouseUp} className={searchClick ? "menu-click" : "menu-idle" }>
+          <p>Search Stamps</p>
+        </label>
+      </div>
+    </div>
+  );
+};
+
 function ModifyImage({ files, setTags }) {
   const [index, setIndex] = useState(0);
   let imageMap = useRef({});
   let tag = useRef("");
 
   const nextImage = () => {
-    const tagArray = tag.current.value.split(/[\s,]+/);
-    tag = "";
-
-    tagArray.forEach(element => {
-      if (!imageMap.current[element]) {
-        imageMap.current[element] = [files[index]];
-      } else if (!imageMap.current[element].includes(files[index])) {
-        imageMap.current[element].push(files[index]);
-      }
-    });
+    imageMap.current[tag.current.value] = files[index];
 
     if (index < files.length - 1) {
       setIndex(index + 1);
@@ -84,28 +122,82 @@ function ModifyImage({ files, setTags }) {
   }
 }
 
+function UploadToServer({ tags, setState }) {
+
+  const imageList = [];
+
+  const uploadStart = () => {
+    let fd = new FormData();
+    for (const tag in tags) {
+      fd.append(tag, tags[tag]);
+    }
+    fetch('http://192.168.1.10:8080/upload', {
+      method: 'POST',
+      body: fd,
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+      .then(response => console.log(response.json()))
+      .then(d => console.log(d));
+
+  }
+
+  for (const tag in tags) {
+    const file = tags[tag];
+    imageList.push(
+      <li key={file.name}>
+        <img src={URL.createObjectURL(file)} />
+        <p>{tag}</p>
+      </li>
+    )
+  }
+
+  return (
+    <div id="image-list">
+      <ul>{imageList}</ul>
+      <button id="upload-button" onClick={uploadStart}>Upload</button>
+    </div>
+  );
+}
+
 function App() {
-  const [images, setImages] = useState([]);
+  const [state, setState] = useState("idle");
+  let images = useRef([]);
   let tags = useRef({});
+
+  const setImages = files => {
+    images.current = files.slice();
+    setState('modify');
+  }
 
   const saveTags = (imageTags) => {
     tags.current = imageTags;
-    setImages([]);
+    setState("review");
   }
 
-  console.log(tags.current);
-
-  if (images.length === 0) {
-    return (
-      <>
-        <h1>吊图管理工具</h1>
-        <DragDropFile handleFile={setImages}/>
-      </>
-    );
-  } else if (images.length > 0){
-    return (
-      <ModifyImage files={images} setTags={saveTags}/>
-    );
+  switch (state) {
+    case "idle":
+      return (
+        <>
+          <MainMenu setState={() => setState("select")} />
+        </>
+      );
+    case "select":
+      return (
+        <>
+          <h1>吊图管理工具</h1>
+          <DragDropFile handleFile={setImages}/>
+        </>
+      );
+    case "modify":
+      return (
+        <ModifyImage files={images.current} setTags={saveTags} />
+      );
+    case "review":
+      return(
+        <UploadToServer tags={tags.current} setState={() => setState("idle")} />
+      );
   }
 }
 

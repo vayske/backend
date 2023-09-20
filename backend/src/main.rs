@@ -1,4 +1,4 @@
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{get, post, web::{self, head}, App, HttpResponse, HttpServer, Responder};
 
 #[get("/get")]
 async fn hello() -> impl Responder {
@@ -11,7 +11,7 @@ async fn echo(req_body: String) -> impl Responder {
 }
 
 async fn manual_hello() -> impl Responder {
-    HttpResponse::Ok().body("Hey there!")
+    HttpResponse::Ok().append_header(("Access-Control-Allow-Origin", "*")).body("Hey there!")
 }
 
 #[actix_web::main]
@@ -22,7 +22,7 @@ async fn main() -> std::io::Result<()> {
             .service(echo)
             .route("/hey", web::get().to(manual_hello))
     })
-    .bind(("192.168.1.10", 8080))?
+    .bind(("192.168.1.6", 8080))?
     .run()
     .await
 }
