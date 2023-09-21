@@ -4,6 +4,7 @@ use actix_multipart::{
         tempfile::TempFile,
         MultipartForm,
     },
+    Multipart,
 };
 
 #[derive(Debug, MultipartForm)]
@@ -20,7 +21,7 @@ async fn hello() -> impl Responder {
 #[post("/upload")]
 async fn save_files(
     MultipartForm(form): MultipartForm<UploadForm>,
-) -> Result<impl Responder, Error> {
+) -> impl Responder {
     println!("h1");
     for f in form.files {
         let file_path = format!("./tmp/{}", f.file_name.unwrap());
@@ -28,7 +29,7 @@ async fn save_files(
         f.file.persist(file_path).unwrap();
     }
 
-    Ok(HttpResponse::Ok().append_header(("Access-Control-Allow-Origin", "*")).body("hi"))
+    HttpResponse::Ok().append_header(("Access-Control-Allow-Origin", "*")).body("hi")
 }
 
 async fn manual_hello() -> impl Responder {
