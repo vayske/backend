@@ -28,7 +28,7 @@ async fn save_files(
         f.file.persist(path).unwrap();
     }
 
-    Ok(HttpResponse::Ok())
+    Ok(HttpResponse::Ok().append_header(("Access-Control-Allow-Origin","*")).body("hi"))
 }
 
 async fn manual_hello() -> impl Responder {

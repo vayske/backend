@@ -136,12 +136,7 @@ function UploadToServer({ tags, setState }) {
       method: 'POST',
       mode: "no-cors",
       body: fd,
-      headers: {
-         'Content-Type': 'multipart/form-data'
-      }
-    })
-      .then(response => response.json())
-      .then(text => console.log(text))
+    }).then(response => console.log(response));
   }
 
   for (const tag in tags) {
