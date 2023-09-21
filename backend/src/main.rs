@@ -8,17 +8,13 @@ async fn hello() -> impl Responder {
 }
 
 #[post("/upload")]
-async fn save_files(mut payload: Multipart, req: HttpRequest) -> impl Responder {
+async fn save_files(mut payload: Multipart) -> impl Responder {
     println!("called!");
     loop {
         if let Ok(Some(field)) = payload.try_next().await {
             println!("filename {}", field.content_disposition().get_filename().unwrap());
         } else { break; }
     }
-    HttpResponse::Ok().body("Hey there!")
-}
-
-async fn manual_hello() -> impl Responder {
     HttpResponse::Ok().body("Hey there!")
 }
 

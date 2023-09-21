@@ -101,7 +101,12 @@ function ModifyImage({ files, setTags }) {
   let tag = useRef("");
 
   const nextImage = () => {
-    imageMap.current[tag.current.value] = files[index];
+    if (!imageMap.current[tag.current.value]) {
+      imageMap.current[tag.current.value] = [files[index]];
+    } else {
+      imageMap.current[tag.current.value].push(files[index]);
+    }
+
 
     if (index < files.length - 1) {
       setIndex(index + 1);
@@ -184,7 +189,7 @@ function App() {
     case "select":
       return (
         <>
-          <h1>吊图管理工具</h1>
+          <h1>表情包管理工具</h1>
           <DragDropFile handleFile={setImages}/>
         </>
       );
