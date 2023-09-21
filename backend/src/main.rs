@@ -1,11 +1,11 @@
 use actix_web::{get, post, web, Error, App, HttpResponse, HttpServer, Responder};
 use actix_multipart::{
     form::{
-        tempfile::TempFile,
+        tempfile::{TempFile, TempFileConfig},
         MultipartForm,
     },
-    Multipart,
 };
+use futures_util::TryStreamExt as _;
 
 #[derive(Debug, MultipartForm)]
 struct UploadForm {
@@ -24,11 +24,10 @@ async fn save_files(
 ) -> Result<impl Responder, Error> {
     for f in form.files {
         let path = format!("./tmp/{}", f.file_name.unwrap());
-        println!("path");
         f.file.persist(path).unwrap();
     }
 
-    Ok(HttpResponse::Ok().append_header(("Access-Control-Allow-Origin","*")).body("hi"))
+    Ok(HttpResponse::Ok())
 }
 
 async fn manual_hello() -> impl Responder {
