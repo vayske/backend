@@ -21,15 +21,14 @@ async fn hello() -> impl Responder {
 #[post("/upload")]
 async fn save_files(
     MultipartForm(form): MultipartForm<UploadForm>,
-) -> impl Responder {
-    println!("h1");
+) -> Result<impl Responder, Error> {
     for f in form.files {
-        let file_path = format!("./tmp/{}", f.file_name.unwrap());
-        println!("{}", file_path);
-        f.file.persist(file_path).unwrap();
+        let path = format!("./tmp/{}", f.file_name.unwrap());
+        println!("{}", path);
+        f.file.persist(path).unwrap();
     }
 
-    HttpResponse::Ok().append_header(("Access-Control-Allow-Origin", "*")).body("hi")
+    Ok(HttpResponse::Ok())
 }
 
 async fn manual_hello() -> impl Responder {
