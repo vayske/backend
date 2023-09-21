@@ -22,6 +22,7 @@ async fn hello() -> impl Responder {
 async fn save_files(
     MultipartForm(form): MultipartForm<UploadForm>,
 ) -> Result<impl Responder, Error> {
+    println!("Called!");
     for f in form.files {
         let path = format!("./tmp/{}", f.file_name.unwrap());
         f.file.persist(path).unwrap();

@@ -129,15 +129,12 @@ function UploadToServer({ tags, setState }) {
   const uploadStart = () => {
     let fd = new FormData();
     for (const tag in tags) {
-      console.log(tag, tags[tag]);
       fd.append(tag, tags[tag]);
     }
     fetch('http://192.168.1.10:8080/upload', {
       method: 'POST',
       body: fd,
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      }
+      mode: "no-cors",
     }).then(response => console.log(response));
   }
 
