@@ -134,8 +134,10 @@ function UploadToServer({ tags, setState }) {
     }
     fetch('http://192.168.1.10:8080/upload', {
       method: 'POST',
-      mode: "no-cors",
       body: fd,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      }
     }).then(response => console.log(response));
   }
 

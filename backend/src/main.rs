@@ -9,6 +9,7 @@ use actix_multipart::{
 
 #[derive(Debug, MultipartForm)]
 struct UploadForm {
+    name: String,
     #[multipart(rename = "file")]
     files: Vec<TempFile>,
 }
@@ -24,7 +25,7 @@ async fn save_files(
 ) -> Result<impl Responder, Error> {
     for f in form.files {
         let path = format!("./tmp/{}", f.file_name.unwrap());
-        println!("{}", path);
+        println!("path");
         f.file.persist(path).unwrap();
     }
 
