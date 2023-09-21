@@ -134,9 +134,8 @@ function UploadToServer({ tags, setState }) {
   const uploadStart = () => {
     const fd = new FormData();
     for (const tag in tags) {
-      fd.append(tag, tags[tag]);
-      for (const value of fd.values()) {
-        console.log(value);
+      for (const file of tags[tag]){
+        fd.append(tag, file);
       }
     }
     fetch('http://192.168.1.10:8080/upload', {
@@ -147,13 +146,14 @@ function UploadToServer({ tags, setState }) {
   }
 
   for (const tag in tags) {
-    const file = tags[tag];
-    imageList.push(
-      <li key={file.name}>
-        <img src={URL.createObjectURL(file)} />
-        <p>{tag}</p>
-      </li>
-    )
+    for (const file of tags[tag]) {
+      imageList.push(
+        <li key={file.name}>
+          <img src={URL.createObjectURL(file)} />
+          <p>{tag}</p>
+        </li>
+      )
+    }
   }
 
   return (
