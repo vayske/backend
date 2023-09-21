@@ -1,16 +1,16 @@
 use actix_web::{get, post, web, Error, App, HttpResponse, HttpServer, Responder};
 use actix_multipart::{
     form::{
-        tempfile::{TempFile, TempFileConfig},
+        tempfile::TempFile,
+        text::Text,
         MultipartForm,
     },
 };
-use futures_util::TryStreamExt as _;
 
 #[derive(Debug, MultipartForm)]
 struct UploadForm {
-    #[multipart(rename = "file")]
-    files: Vec<TempFile>,
+    tags: Text<String>,
+    file: TempFile
 }
 
 #[get("/get")]
@@ -22,11 +22,13 @@ async fn hello() -> impl Responder {
 async fn save_files(
     MultipartForm(form): MultipartForm<UploadForm>,
 ) -> Result<impl Responder, Error> {
-    println!("{}", form.files[0].size);
-    for f in form.files {
+    println!("{} {}", form.tags.as_str(), form.file.size);
+    /*
+    for f in form {
         let path = format!("./tmp/{}", f.file_name.unwrap());
         f.file.persist(path).unwrap();
     }
+    */
 
     Ok(HttpResponse::Ok())
 }

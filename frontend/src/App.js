@@ -127,9 +127,12 @@ function UploadToServer({ tags, setState }) {
   const imageList = [];
 
   const uploadStart = () => {
-    let fd = new FormData();
+    const fd = new FormData();
     for (const tag in tags) {
       fd.append(tag, tags[tag]);
+      for (const value of fd.values()) {
+        console.log(value);
+      }
     }
     fetch('http://192.168.1.10:8080/upload', {
       method: 'POST',
