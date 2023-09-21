@@ -1,4 +1,16 @@
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{get, post, web, Error, App, HttpResponse, HttpServer, Responder};
+use actix_multipart::{
+    form::{
+        tempfile::TempFile,
+        MultipartForm,
+    },
+};
+
+#[derive(Debug, MultipartForm)]
+struct UploadForm {
+    #[multipart(rename = "file")]
+    files: Vec<TempFile>,
+}
 
 #[get("/get")]
 async fn hello() -> impl Responder {
@@ -6,8 +18,16 @@ async fn hello() -> impl Responder {
 }
 
 #[post("/upload")]
-async fn echo(req_body: String) -> impl Responder {
-    HttpResponse::Ok().append_header(("Access-Control-Allow-Origin", "*")).body(req_body)
+async fn save_files(
+    MultipartForm(form): MultipartForm<UploadForm>,
+) -> Result<impl Responder, Error> {
+    for f in form.files {
+        let path = format!("./tmp/{}", f.file_name.unwrap());
+        println!("{}", path);
+        f.file.persist(path).unwrap();
+    }
+
+    Ok(HttpResponse::Ok())
 }
 
 async fn manual_hello() -> impl Responder {
@@ -19,7 +39,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
             .service(hello)
-            .service(echo)
+            .service(save_files)
             .route("/hey", web::get().to(manual_hello))
     })
     .bind(("192.168.1.10", 8080))?
