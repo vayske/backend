@@ -9,7 +9,6 @@ use actix_multipart::{
 
 #[derive(Debug, MultipartForm)]
 struct UploadForm {
-    name: String,
     #[multipart(rename = "file")]
     files: Vec<TempFile>,
 }
