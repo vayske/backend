@@ -21,6 +21,7 @@ async fn hello() -> impl Responder {
 async fn save_files(
     MultipartForm(form): MultipartForm<UploadForm>,
 ) -> Result<impl Responder, Error> {
+    println!("h1");
     for f in form.files {
         let file_path = format!("./tmp/{}", f.file_name.unwrap());
         println!("{}", file_path);
