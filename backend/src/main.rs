@@ -22,12 +22,12 @@ async fn save_files(
     MultipartForm(form): MultipartForm<UploadForm>,
 ) -> Result<impl Responder, Error> {
     for f in form.files {
-        let path = format!("./tmp/{}", f.file_name.unwrap());
-        println!("{}", path);
-        f.file.persist(path).unwrap();
+        let file_path = format!("./tmp/{}", f.file_name.unwrap());
+        println!("{}", file_path);
+        f.file.persist(file_path).unwrap();
     }
 
-    Ok(HttpResponse::Ok())
+    Ok(HttpResponse::Ok().append_header(("Access-Control-Allow-Origin", "*")).body("hi"))
 }
 
 async fn manual_hello() -> impl Responder {
