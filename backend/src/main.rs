@@ -1,17 +1,6 @@
-use actix_web::{get, post, web, Error, App, HttpResponse, HttpServer, Responder};
-use actix_multipart::{
-    form::{
-        tempfile::TempFile,
-        text::Text,
-        MultipartForm,
-    },
-};
-
-#[derive(Debug, MultipartForm)]
-struct UploadForm {
-    tags: Text<String>,
-    file: TempFile
-}
+use actix_web::{get, post, web, App, HttpResponse, HttpRequest, HttpServer, Responder};
+use actix_multipart::Multipart;
+use futures_util::TryStreamExt;
 
 #[get("/get")]
 async fn hello() -> impl Responder {
@@ -19,18 +8,14 @@ async fn hello() -> impl Responder {
 }
 
 #[post("/upload")]
-async fn save_files(
-    MultipartForm(form): MultipartForm<UploadForm>,
-) -> Result<impl Responder, Error> {
-    println!("{} ? {}", form.tags.as_str(), form.file.size);
-    /*
-    for f in form {
-        let path = format!("./tmp/{}", f.file_name.unwrap());
-        f.file.persist(path).unwrap();
+async fn save_files(mut payload: Multipart, req: HttpRequest) -> impl Responder {
+    println!("called!");
+    loop {
+        if let Ok(Some(field)) = payload.try_next().await {
+            println!("filename {}", field.content_disposition().get_filename().unwrap());
+        } else { break; }
     }
-    */
-
-    Ok(HttpResponse::Ok())
+    HttpResponse::Ok().body("Hey there!")
 }
 
 async fn manual_hello() -> impl Responder {
