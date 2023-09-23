@@ -1,4 +1,4 @@
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{get, post, App, HttpResponse, HttpServer, Responder};
 use actix_multipart::Multipart;
 use futures_util::TryStreamExt;
 use mime::{ Mime, IMAGE_PNG, IMAGE_JPEG, IMAGE_GIF, IMAGE_BMP };
@@ -44,7 +44,6 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .service(hello)
             .service(save_files)
-            .route("/hey", web::get().to(manual_hello))
     })
     .bind(("192.168.1.10", 8080))?
     .run()
