@@ -40,6 +40,7 @@ async fn save_files(mut payload: Multipart) -> impl Responder {
             break;
         }
     }
+    println!("{}", response_body);
     HttpResponse::Ok().body(response_body)
 }
 

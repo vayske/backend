@@ -142,7 +142,8 @@ function UploadToServer({ tags, setState }) {
       method: 'POST',
       body: fd,
       mode: "no-cors",
-    }).then(response => console.log(response));
+    }).then(response => response.text())
+    .then(text => console.log(text));
   }
 
   for (const tag in tags) {
