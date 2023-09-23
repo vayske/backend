@@ -44,7 +44,7 @@ async fn save_files(mut payload: Multipart) -> impl Responder {
 }
 
 fn save_tags(filename: &str, tags: &str) -> redis::RedisResult<()> {
-    let mut connection = redis::Client::open("localhost:8082")
+    let mut connection = redis::Client::open("redis://localhost:8082")
                                                         .expect("Invalid connection URL")
                                                         .get_connection()
                                                         .expect("failed to connect to Redis");
