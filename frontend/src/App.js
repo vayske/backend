@@ -141,7 +141,6 @@ function UploadToServer({ tags, setState }) {
     fetch('http://192.168.1.10:8080/upload', {
       method: 'POST',
       body: fd,
-      mode: "no-cors",
     }).then(response => response.text())
     .then(text => console.log(text));
   }

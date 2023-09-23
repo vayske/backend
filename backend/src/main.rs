@@ -40,8 +40,7 @@ async fn save_files(mut payload: Multipart) -> impl Responder {
             break;
         }
     }
-    println!("{}", response_body);
-    HttpResponse::Ok().body(response_body)
+    HttpResponse::Ok().append_header(("Access-Control-Allow-Origin", "*")).body(response_body)
 }
 
 #[actix_web::main]
