@@ -284,6 +284,8 @@ dependencies = [
  "actix-web",
  "env_logger",
  "futures-util",
+ "mime",
+ "tokio",
 ]
 
 [[package]]
