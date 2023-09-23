@@ -2,10 +2,11 @@ use actix_web::{get, post, App, HttpResponse, HttpServer, Responder};
 use actix_multipart::Multipart;
 use futures_util::TryStreamExt;
 use mime::{ Mime, IMAGE_PNG, IMAGE_JPEG, IMAGE_GIF, IMAGE_BMP };
-// use tokio::{
-//     fs,
-//     io::AsyncWriteExt
-// };
+use tokio::{
+    fs,
+    io::AsyncWriteExt
+};
+use redis;
 
 #[get("/get")]
 async fn hello() -> impl Responder {
@@ -14,13 +15,11 @@ async fn hello() -> impl Responder {
 
 #[post("/upload")]
 async fn save_files(mut payload: Multipart) -> impl Responder {
-    println!("called!");
     let legal_filetypes: [Mime; 4] = [IMAGE_BMP, IMAGE_GIF, IMAGE_JPEG, IMAGE_PNG];
-    //let dir: &str = "./images/";
-    //let mut image_list: HashMap<String, String> = HashMap::new();
+    let dir: &str = "./images/";
     let mut response_body: String = "".to_owned();
     loop {
-        if let Ok(Some(field)) = payload.try_next().await {
+        if let Ok(Some(mut field)) = payload.try_next().await {
             let filetype: Option<&Mime> = field.content_type();
             if filetype.is_none() {
                 continue;
@@ -28,14 +27,15 @@ async fn save_files(mut payload: Multipart) -> impl Responder {
             if !legal_filetypes.contains(&filetype.unwrap()) {
                 continue;
             }
-            let file_name: &str = field.content_disposition().get_filename().unwrap();
-            let tags: &str = field.content_disposition().get_name().unwrap();
-            response_body.push_str(&format!("file: {}\ttag: {}\n",file_name,tags));
-            //let destination: String = format!("{}{}", dir, file_name);
-            //let mut save_image: fs::File = fs::File::create(&destination).await.unwrap();
-            // while let Ok(Some(chunk)) = field.try_next().await {
-            //     save_image.write_all(&chunk).await.unwrap();
-            // }
+            let file_name: String = field.content_disposition().get_filename().unwrap().to_string();
+            let tags: String = field.content_disposition().get_name().unwrap().to_string();
+            response_body.push_str(&format!("file: {}\ttag: {:?}\n",file_name,tags));
+            let destination: String = format!("{}{}", dir, file_name);
+            let mut save_image: fs::File = fs::File::create(&destination).await.unwrap();
+            while let Ok(Some(chunk)) = field.try_next().await {
+                save_image.write_all(&chunk).await.unwrap();
+            }
+            let _ = save_tags(&file_name, &tags);
         } else {
             break;
         }
@@ -43,6 +43,16 @@ async fn save_files(mut payload: Multipart) -> impl Responder {
     HttpResponse::Ok().append_header(("Access-Control-Allow-Origin", "*")).body(response_body)
 }
 
+fn save_tags(filename: &str, tags: &str) -> redis::RedisResult<()> {
+    let client = redis::Client::open("localhost:8082")?;
+    let mut connection = client.get_connection()?;
+    let tag_list: Vec<&str> = tags.split_whitespace().collect();
+    for tag in tag_list {
+        let _ : () = redis::cmd("SADD").arg(tag).arg(filename).query(&mut connection)?;
+    }
+    Ok(())
+
+}
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
