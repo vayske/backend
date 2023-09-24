@@ -130,6 +130,10 @@ p {
   background-color: #f8fafc;
 }
 
+#result-text {
+  white-space: pre-line;
+}
+
 #label-button.menu-click {
   background-color: #ffffff;
 }

@@ -1,4 +1,4 @@
-use actix_web::{get, post, App, HttpResponse, HttpServer, Responder};
+use actix_web::{get, post, App, HttpRequest, HttpResponse, HttpServer, Responder};
 use actix_multipart::Multipart;
 use futures_util::TryStreamExt;
 use mime::{ Mime, IMAGE_PNG, IMAGE_JPEG, IMAGE_GIF, IMAGE_BMP };
@@ -8,9 +8,11 @@ use tokio::{
 };
 use redis;
 
-#[get("/get")]
-async fn hello() -> impl Responder {
-    HttpResponse::Ok().body("Hello world!")
+#[get("/get/{tags}")]
+async fn search_files(req: HttpRequest) -> impl Responder {
+    let tags: u8 = req.match_info().get("tags").unwrap().parse().unwrap();
+    println!("{tags}");
+    HttpResponse::Ok().body(tags.to_string())
 }
 
 #[post("/upload")]
@@ -27,15 +29,15 @@ async fn save_files(mut payload: Multipart) -> impl Responder {
             if !legal_filetypes.contains(&filetype.unwrap()) {
                 continue;
             }
-            let file_name: String = field.content_disposition().get_filename().unwrap().to_string();
+            let filename: String = field.content_disposition().get_filename().unwrap().to_string();
             let tags: String = field.content_disposition().get_name().unwrap().to_string();
-            response_body.push_str(&format!("file: {}\ttag: {:?}\n",file_name,tags));
-            let destination: String = format!("{}{}", dir, file_name);
+            response_body.push_str(&format!("file: {}\ttag: {:?}\n",filename,tags));
+            let destination: String = format!("{}{}", dir, filename);
             let mut save_image: fs::File = fs::File::create(&destination).await.unwrap();
             while let Ok(Some(chunk)) = field.try_next().await {
                 save_image.write_all(&chunk).await.unwrap();
             }
-            let _ = save_tags(&file_name, &tags);
+            let _ = save_tags(&tags, &filename);
         } else {
             break;
         }
@@ -43,7 +45,7 @@ async fn save_files(mut payload: Multipart) -> impl Responder {
     HttpResponse::Ok().append_header(("Access-Control-Allow-Origin", "*")).body(response_body)
 }
 
-fn save_tags(filename: &str, tags: &str) -> redis::RedisResult<()> {
+fn save_tags(tags: &str, filename: &str) -> redis::RedisResult<()> {
     let mut connection = redis::Client::open("redis://localhost:8082")
                                                         .expect("Invalid connection URL")
                                                         .get_connection()
@@ -53,13 +55,13 @@ fn save_tags(filename: &str, tags: &str) -> redis::RedisResult<()> {
         let _ : () = redis::cmd("SADD").arg(tag).arg(filename).query(&mut connection)?;
     }
     Ok(())
-
 }
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
-            .service(hello)
+            .service(search_files)
             .service(save_files)
     })
     .bind(("192.168.1.10", 8080))?

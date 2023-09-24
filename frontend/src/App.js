@@ -70,9 +70,9 @@ function MainMenu({ setState }) {
 
   const handleChange = e => {
     if (e.target.closest("#label-button[for=input-save-stamps]")) {
-      setState();
+      setState("save");
     } else if (e.target.closest("#label-button[for=input-search-stamps]")) {
-      setState();
+      setState("search");
     }
   }
 
@@ -87,7 +87,7 @@ function MainMenu({ setState }) {
           <p>Save Stamps</p>
         </label>
         <input type="button" id="input-search-stamps" />
-        <label id="label-button" htmlFor="input-search-stamps" onMouseLeave={handleMouseUp} onMouseDownCapture={handleMouseDown} onMouseUpCapture={handleMouseUp} className={searchClick ? "menu-click" : "menu-idle" }>
+        <label id="label-button" htmlFor="input-search-stamps" onClick={handleChange} onMouseLeave={handleMouseUp} onMouseDownCapture={handleMouseDown} onMouseUpCapture={handleMouseUp} className={searchClick ? "menu-click" : "menu-idle" }>
           <p>Search Stamps</p>
         </label>
       </div>
@@ -127,8 +127,48 @@ function ModifyImage({ files, setTags }) {
   }
 }
 
-function UploadToServer({ tags, setState }) {
+function SearchImage({ resetAll }) {
+  const [tags, setTags] = useState("");
+  let tagRef = useRef("");
+  let result = useRef("");
 
+  const handleClick = () => {
+    if (tagRef.current.value) {
+      setTags(tagRef.current.value);
+    }
+  }
+
+  const handleDone = () => {
+    resetAll();
+  }
+
+  if (!tags) {
+    return (
+      <div id="search-images">
+        <input ref={tagRef} type="text" id="image-tag"/>
+        <button id="next-button" onClick={handleClick}>Search</button>
+      </div>
+    );
+  } else {
+    fetch('http://192.168.1.10:8082/search', {
+      method: 'GET',
+      body: JSON.stringify({
+        tags: tags,
+      }),
+    }).then(response => response.text())
+    .then(text => {result = text});
+    return (
+      <div id="search-result">
+        <p id="result-text">{result.current}</p>
+        <button id="result-done" onClick={handleDone}>Done</button>
+      </div>
+    );
+  }
+
+
+}
+
+function UploadToServer({ tags, setResult }) {
   const imageList = [];
 
   const uploadStart = () => {
@@ -142,7 +182,7 @@ function UploadToServer({ tags, setState }) {
       method: 'POST',
       body: fd,
     }).then(response => response.text())
-    .then(text => console.log(text));
+    .then(text => setResult(text));
   }
 
   for (const tag in tags) {
@@ -164,29 +204,66 @@ function UploadToServer({ tags, setState }) {
   );
 }
 
+function ShowResult({ respText, resetAll }) {
+  const handleClick = () => {
+    resetAll();
+  }
+  return (
+    <div id="result">
+      <p id="result-text">{respText}</p>
+      <button id="result-done" onClick={handleClick}>Done</button>
+    </div>
+  )
+}
+
 function App() {
   const [state, setState] = useState("idle");
   let images = useRef([]);
   let tags = useRef({});
+  let respText = useRef("");
 
   const setImages = files => {
     images.current = files.slice();
     setState('modify');
   }
 
-  const saveTags = (imageTags) => {
+  const saveTags = imageTags => {
     tags.current = imageTags;
-    setState("review");
+    setState("upload");
+  }
+
+  const setSearchTags = imageTags => {
+    tagSearch.current = imageTags;
+    setState("idle");
+  }
+
+  const setResult = result => {
+    respText.current = result;
+    setState("result");
+  }
+
+  const resetAll = () => {
+    images.current = [];
+    tags.current = {};
+    tagSearch.current = "";
+    respText.current = "";
+    setState("idle");
   }
 
   switch (state) {
     case "idle":
       return (
         <>
-          <MainMenu setState={() => setState("select")} />
+          <MainMenu setState={(state) => setState(state)} />
         </>
       );
-    case "select":
+    case "search":
+      return (
+        <>
+          <SearchImage setSearchTags={setSearchTags}/>
+        </>
+      )
+    case "save":
       return (
         <>
           <h1>表情包管理工具</h1>
@@ -197,9 +274,13 @@ function App() {
       return (
         <ModifyImage files={images.current} setTags={saveTags} />
       );
-    case "review":
+    case "upload":
       return(
-        <UploadToServer tags={tags.current} setState={() => setState("idle")} />
+        <UploadToServer tags={tags.current} setResult={setResult} />
+      );
+    case "result":
+      return (
+        <ShowResult respText={respText.current} resetAll={resetAll} />
       );
   }
 }
