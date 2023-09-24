@@ -10,9 +10,9 @@ use redis;
 
 #[get("/search/{tags}")]
 async fn search_files(req: HttpRequest) -> impl Responder {
-    let tags: u8 = req.match_info().get("tags").unwrap().parse().unwrap();
+    let tags: String = req.match_info().get("tags").unwrap().parse().unwrap();
     println!("{tags}");
-    HttpResponse::Ok().append_header(("Access-Control-Allow-Origin", "*")).body(tags.to_string())
+    HttpResponse::Ok().append_header(("Access-Control-Allow-Origin", "*")).body(tags)
 }
 
 #[post("/upload")]
