@@ -132,6 +132,15 @@ p {
 
 #result-text {
   white-space: pre-line;
+  display: block;
+  text-align: center;
+  margin: auto;
+}
+
+#result-done {
+  display: block;
+  text-align: center;
+  margin: auto;
 }
 
 #label-button.menu-click {

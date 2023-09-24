@@ -155,9 +155,17 @@ function SearchImage({ resetAll }) {
     );
   } else {
     console.log(result);
+    let imageList = [];
+    for (const image of result) {
+      imageList.push(
+        <li key={image}>
+          <img src={"http://192.168.1.10:8080/images/" + image} />
+        </li>
+      )
+    }
     return (
       <div id="search-result">
-        <p id="result-text">{result}</p>
+        <ul>{imageList}</ul>
         <button id="result-done" onClick={handleDone}>Done</button>
       </div>
     );
@@ -204,6 +212,7 @@ function ShowResult({ respText, resetAll }) {
   const handleClick = () => {
     resetAll();
   }
+
   return (
     <div id="result">
       <p id="result-text">{respText}</p>
