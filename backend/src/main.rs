@@ -1,5 +1,6 @@
 use actix_web::{get, post, App, web, HttpResponse, HttpServer, Responder};
 use actix_multipart::Multipart;
+use actix_files;
 use futures_util::TryStreamExt;
 use serde::Deserialize;
 
@@ -22,7 +23,6 @@ async fn search_files(info: web::Query<Info>) -> impl Responder {
     for s in result {
         response_text.push_str(&s);
     }
-    println!("{response_text}");
     HttpResponse::Ok().append_header(("Access-Control-Allow-Origin", "*")).body(response_text)
 }
 
@@ -87,6 +87,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .service(search_files)
             .service(save_files)
+            .service(actix_files::Files::new("/images", "./images").show_files_listing())
     })
     .bind(("192.168.1.10", 8080))?
     .run()

@@ -128,17 +128,15 @@ function ModifyImage({ files, setTags }) {
 }
 
 function SearchImage({ resetAll }) {
-  const [state, setState] = useState("idle");
+  const [fileList, setFileList] = useState([]);
   let tagRef = useRef("");
-  let result = useRef("");
 
   const handleClick = () => {
     if (tagRef.current.value) {
       fetch('http://192.168.1.10:8080/search?' + new URLSearchParams({tags: tagRef.current.value}), {
         method: 'GET'
       }).then(response => response.text())
-        .then(text => {result.current = text});
-      setState("review");
+        .then(text => setState(text));
     }
   }
 
@@ -153,10 +151,10 @@ function SearchImage({ resetAll }) {
         <button id="next-button" onClick={handleClick}>Search</button>
       </div>
     );
-  } else if (state == "review") {
+  } else {
     return (
       <div id="search-result">
-        <p id="result-text">{result.current}</p>
+        <p id="result-text">{state}</p>
         <button id="result-done" onClick={handleDone}>Done</button>
       </div>
     );
