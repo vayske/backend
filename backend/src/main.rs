@@ -23,7 +23,7 @@ async fn search_files(info: web::Query<Info>) -> impl Responder {
     for s in result {
         response_text.push_str(&format!("{s} "));
     }
-    HttpResponse::Ok().append_header(("Access-Control-Allow-Origin", "*")).body(response_text)
+    HttpResponse::Ok().append_header(("Access-Control-Allow-Origin", "*")).body(response_text.trim_end().to_string())
 }
 
 #[post("/upload")]
