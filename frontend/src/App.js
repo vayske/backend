@@ -150,11 +150,8 @@ function SearchImage({ resetAll }) {
       </div>
     );
   } else {
-    fetch('http://192.168.1.10:8082/search', {
-      method: 'GET',
-      body: JSON.stringify({
-        tags: tags,
-      }),
+    fetch('http://192.168.1.10:8080/search/' + new URLSearchParams({tags: tags}), {
+      method: 'GET'
     }).then(response => response.text())
     .then(text => {result = text});
     return (
@@ -232,11 +229,6 @@ function App() {
     setState("upload");
   }
 
-  const setSearchTags = imageTags => {
-    tagSearch.current = imageTags;
-    setState("idle");
-  }
-
   const setResult = result => {
     respText.current = result;
     setState("result");
@@ -245,7 +237,6 @@ function App() {
   const resetAll = () => {
     images.current = [];
     tags.current = {};
-    tagSearch.current = "";
     respText.current = "";
     setState("idle");
   }
@@ -260,7 +251,7 @@ function App() {
     case "search":
       return (
         <>
-          <SearchImage setSearchTags={setSearchTags}/>
+          <SearchImage resetAll={resetAll}/>
         </>
       )
     case "save":

@@ -8,11 +8,11 @@ use tokio::{
 };
 use redis;
 
-#[get("/get/{tags}")]
+#[get("/search/{tags}")]
 async fn search_files(req: HttpRequest) -> impl Responder {
     let tags: u8 = req.match_info().get("tags").unwrap().parse().unwrap();
     println!("{tags}");
-    HttpResponse::Ok().body(tags.to_string())
+    HttpResponse::Ok().append_header(("Access-Control-Allow-Origin", "*")).body(tags.to_string())
 }
 
 #[post("/upload")]
