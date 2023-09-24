@@ -1,5 +1,5 @@
 use actix_web::{get, post, App, web, HttpResponse, HttpServer, Responder};
-use actix_multipart::{Multipart, form};
+use actix_multipart::Multipart;
 use actix_files;
 use futures_util::TryStreamExt;
 use serde::Deserialize;
@@ -21,7 +21,7 @@ async fn search_files(info: web::Query<Info>) -> impl Responder {
     let result: Vec<String> = search_images(&info.tags);
     let mut response_text: String = "".to_owned();
     for s in result {
-        response_text.push_str(&format!("{s}\n"));
+        response_text.push_str(&format!("{s} "));
     }
     HttpResponse::Ok().append_header(("Access-Control-Allow-Origin", "*")).body(response_text)
 }

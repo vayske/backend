@@ -137,7 +137,7 @@ function SearchImage({ resetAll }) {
         method: 'GET'
       }).then(response => response.text())
         .then(text => {
-          setResult(text.split('\n'));
+          setResult(text.split());
         });
     }
   }
