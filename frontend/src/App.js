@@ -146,7 +146,7 @@ function SearchImage({ resetAll }) {
     resetAll();
   }
 
-  if (result.length == 0) {
+  if (result.length === 0) {
     return (
       <div id="search-images">
         <input ref={tagRef} type="text" id="image-tag"/>
@@ -159,7 +159,7 @@ function SearchImage({ resetAll }) {
     for (const image of result) {
       imageList.push(
         <li key={image}>
-          <img src={"http://192.168.1.10:8080/images/" + image} />
+          <img src={"http://192.168.1.10:8080/images/" + image} alt={image} />
         </li>
       )
     }
@@ -193,7 +193,7 @@ function UploadToServer({ tags, setResult }) {
     for (const file of tags[tag]) {
       imageList.push(
         <li key={file.name}>
-          <img src={URL.createObjectURL(file)} />
+          <img src={URL.createObjectURL(file)} alt={file.name} />
           <p>{tag}</p>
         </li>
       )
@@ -250,12 +250,6 @@ function App() {
   }
 
   switch (state) {
-    case "idle":
-      return (
-        <>
-          <MainMenu setState={(state) => setState(state)} />
-        </>
-      );
     case "search":
       return (
         <>
@@ -280,6 +274,12 @@ function App() {
     case "result":
       return (
         <ShowResult respText={respText.current} resetAll={resetAll} />
+      );
+    default:
+      return (
+        <>
+          <MainMenu setState={(state) => setState(state)} />
+        </>
       );
   }
 }
