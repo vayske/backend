@@ -1,5 +1,5 @@
 use actix_web::{get, post, App, web, HttpResponse, HttpServer, Responder};
-use actix_multipart::{Multipart, form};
+use actix_multipart::Multipart;
 use futures_util::TryStreamExt;
 use serde::Deserialize;
 
@@ -17,6 +17,7 @@ struct Info {
 
 #[get("/search")]
 async fn search_files(info: web::Query<Info>) -> impl Responder {
+    println!("{}", info.tags);
     let tag_list: Vec<&str> = info.tags.split_whitespace().collect();
     let mut response_text: String = "".to_owned();
     for t in tag_list {
