@@ -8,7 +8,7 @@ use tokio::{
     fs,
     io::AsyncWriteExt
 };
-use redis;
+use redis::{self, Commands};
 
 #[derive(Deserialize)]
 struct Info {
@@ -17,7 +17,11 @@ struct Info {
 
 #[get("/search")]
 async fn search_files(info: web::Query<Info>) -> impl Responder {
-    let response_text: String = search_images(&info.tags);
+    let result: Vec<String> = search_images(&info.tags);
+    let mut response_text: String = "".to_owned();
+    for s in result {
+        response_text.push_str(&s);
+    }
     HttpResponse::Ok().append_header(("Access-Control-Allow-Origin", "*")).body(response_text)
 }
 
@@ -67,12 +71,12 @@ fn save_tags(tags: &str, filename: &str) -> redis::RedisResult<()> {
     Ok(())
 }
 
-fn search_images(tags: &str) -> String {
+fn search_images(tags: &str) -> Vec<String> {
     let mut connection = redis::Client::open("redis://localhost:8082")
                                                         .expect("Invalid connection URL")
                                                         .get_connection()
                                                         .expect("failed to connect to Redis");
-    let result: String = redis::cmd("SINTER").arg(tags).query(&mut connection).unwrap();
+    let result: Vec<String> = connection.sinter(tags).expect("failed to execute SINTER");
     return result;
 }
 
