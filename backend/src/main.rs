@@ -11,6 +11,7 @@ use redis;
 #[get("/search/{tags}")]
 async fn search_files(req: HttpRequest) -> impl Responder {
     let tags: String = req.match_info().get("tags").unwrap().to_string();
+    println!("{tags}");
     let tag_list: Vec<&str> = tags.split_whitespace().collect();
     let mut response_text: String = "".to_owned();
     for t in tag_list {
