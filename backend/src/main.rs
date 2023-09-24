@@ -19,6 +19,7 @@ struct Info {
 async fn search_files(info: web::Query<Info>) -> impl Responder {
     println!("{}", info.tags);
     let tag_list: Vec<&str> = info.tags.split_whitespace().collect();
+    println!("{:?}", tag_list);
     let mut response_text: String = "".to_owned();
     for t in tag_list {
         response_text.push_str(&format!("{t}\n"));
