@@ -10,9 +10,13 @@ use redis;
 
 #[get("/search/{tags}")]
 async fn search_files(req: HttpRequest) -> impl Responder {
-    let tags: String = req.match_info().get("tags").unwrap().parse().unwrap();
-    println!("{tags}");
-    HttpResponse::Ok().append_header(("Access-Control-Allow-Origin", "*")).body(tags)
+    let tags: String = req.match_info().get("tags").unwrap().to_string();
+    let tag_list: Vec<&str> = tags.split_whitespace().collect();
+    let mut response_text: String = "".to_owned();
+    for t in tag_list {
+        response_text.push_str(t);
+    }
+    HttpResponse::Ok().append_header(("Access-Control-Allow-Origin", "*")).body(response_text)
 }
 
 #[post("/upload")]

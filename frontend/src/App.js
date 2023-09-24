@@ -153,7 +153,9 @@ function SearchImage({ resetAll }) {
     fetch('http://192.168.1.10:8080/search/' + new URLSearchParams({tags: tags}), {
       method: 'GET'
     }).then(response => response.text())
-    .then(text => {result = text});
+    .then(text => {
+      result.current = text;
+    });
     return (
       <div id="search-result">
         <p id="result-text">{result.current}</p>
