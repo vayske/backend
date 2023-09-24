@@ -128,7 +128,7 @@ function ModifyImage({ files, setTags }) {
 }
 
 function SearchImage({ resetAll }) {
-  const [fileList, setFileList] = useState([]);
+  const [result, setResult] = useState([]);
   let tagRef = useRef("");
 
   const handleClick = () => {
@@ -136,7 +136,9 @@ function SearchImage({ resetAll }) {
       fetch('http://192.168.1.10:8080/search?' + new URLSearchParams({tags: tagRef.current.value}), {
         method: 'GET'
       }).then(response => response.text())
-        .then(text => setState(text));
+        .then(text => {
+          setResult(text.split('\n'));
+        });
     }
   }
 
@@ -144,7 +146,7 @@ function SearchImage({ resetAll }) {
     resetAll();
   }
 
-  if (state == "idle") {
+  if (result.length == 0) {
     return (
       <div id="search-images">
         <input ref={tagRef} type="text" id="image-tag"/>
@@ -152,9 +154,10 @@ function SearchImage({ resetAll }) {
       </div>
     );
   } else {
+    console.log(result);
     return (
       <div id="search-result">
-        <p id="result-text">{state}</p>
+        <p id="result-text">{result}</p>
         <button id="result-done" onClick={handleDone}>Done</button>
       </div>
     );
