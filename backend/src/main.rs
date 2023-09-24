@@ -17,13 +17,7 @@ struct Info {
 
 #[get("/search")]
 async fn search_files(info: web::Query<Info>) -> impl Responder {
-    println!("{}", info.tags);
-    let tag_list: Vec<&str> = info.tags.split_whitespace().collect();
-    println!("{:?}", tag_list);
-    let mut response_text: String = "".to_owned();
-    for t in tag_list {
-        response_text.push_str(&format!("{t}\n"));
-    }
+    let response_text: String = search_images(&info.tags);
     HttpResponse::Ok().append_header(("Access-Control-Allow-Origin", "*")).body(response_text)
 }
 
@@ -46,10 +40,14 @@ async fn save_files(mut payload: Multipart) -> impl Responder {
             response_body.push_str(&format!("file: {}\ttag: {:?}\n",filename,tags));
             let destination: String = format!("{}{}", dir, filename);
             let mut save_image: fs::File = fs::File::create(&destination).await.unwrap();
+            println!("Upload: Writing {} to {}...", filename, destination);
             while let Ok(Some(chunk)) = field.try_next().await {
                 save_image.write_all(&chunk).await.unwrap();
             }
+            println!("Upload: Done!!");
+            println!("Redis: Saving tags to db...");
             let _ = save_tags(&tags, &filename);
+            println!("Redis: Done!!");
         } else {
             break;
         }
@@ -67,6 +65,15 @@ fn save_tags(tags: &str, filename: &str) -> redis::RedisResult<()> {
         let _ : () = redis::cmd("SADD").arg(tag).arg(filename).query(&mut connection)?;
     }
     Ok(())
+}
+
+fn search_images(tags: &str) -> String {
+    let mut connection = redis::Client::open("redis://localhost:8082")
+                                                        .expect("Invalid connection URL")
+                                                        .get_connection()
+                                                        .expect("failed to connect to Redis");
+    let result: String = redis::cmd("SINTER").arg(tags).query(&mut connection).unwrap();
+    return result;
 }
 
 #[actix_web::main]

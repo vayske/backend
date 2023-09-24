@@ -128,13 +128,17 @@ function ModifyImage({ files, setTags }) {
 }
 
 function SearchImage({ resetAll }) {
-  const [tags, setTags] = useState("");
+  const [state, setState] = useState("idle");
   let tagRef = useRef("");
   let result = useRef("");
 
   const handleClick = () => {
     if (tagRef.current.value) {
-      setTags(tagRef.current.value);
+      fetch('http://192.168.1.10:8080/search?' + new URLSearchParams({tags: tagRef.current.value}), {
+        method: 'GET'
+      }).then(response => response.text())
+        .then(text => {result.current = text});
+      setState("review");
     }
   }
 
@@ -142,20 +146,14 @@ function SearchImage({ resetAll }) {
     resetAll();
   }
 
-  if (!tags) {
+  if (state == "idle") {
     return (
       <div id="search-images">
         <input ref={tagRef} type="text" id="image-tag"/>
         <button id="next-button" onClick={handleClick}>Search</button>
       </div>
     );
-  } else {
-    fetch('http://192.168.1.10:8080/search?' + new URLSearchParams({tags: tags}), {
-      method: 'GET'
-    }).then(response => response.text())
-    .then(text => {
-      result.current = text;
-    });
+  } else if (state == "review") {
     return (
       <div id="search-result">
         <p id="result-text">{result.current}</p>
@@ -163,8 +161,6 @@ function SearchImage({ resetAll }) {
       </div>
     );
   }
-
-
 }
 
 function UploadToServer({ tags, setResult }) {
