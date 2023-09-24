@@ -150,7 +150,7 @@ function SearchImage({ resetAll }) {
       </div>
     );
   } else {
-    fetch('http://192.168.1.10:8080/search/' + new URLSearchParams({tags: tags}), {
+    fetch('http://192.168.1.10:8080/search?' + new URLSearchParams({tags: tags}), {
       method: 'GET'
     }).then(response => response.text())
     .then(text => {

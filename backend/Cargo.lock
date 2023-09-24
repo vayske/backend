@@ -286,6 +286,7 @@ dependencies = [
  "futures-util",
  "mime",
  "redis",
+ "serde",
  "tokio",
 ]
 

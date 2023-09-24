@@ -1,6 +1,8 @@
 use actix_web::{get, post, App, web, HttpResponse, HttpServer, Responder};
 use actix_multipart::Multipart;
 use futures_util::TryStreamExt;
+use serde::Deserialize;
+
 use mime::{ Mime, IMAGE_PNG, IMAGE_JPEG, IMAGE_GIF, IMAGE_BMP };
 use tokio::{
     fs,
@@ -8,11 +10,15 @@ use tokio::{
 };
 use redis;
 
-#[get("/search/{tags}")]
-async fn search_files(path: web::Path<String>) -> impl Responder {
-    let tags: String = path.into_inner();
-    println!("{tags}");
-    let tag_list: Vec<&str> = tags.split_whitespace().collect();
+#[derive(Deserialize)]
+struct Info {
+    tags: String,
+}
+
+#[get("/search")]
+async fn search_files(info: web::Query<Info>) -> impl Responder {
+    println!("{}", info.tags);
+    let tag_list: Vec<&str> = info.tags.split("+").collect();
     let mut response_text: String = "".to_owned();
     for t in tag_list {
         response_text.push_str(t);
