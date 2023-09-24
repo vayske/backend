@@ -22,6 +22,7 @@ async fn search_files(info: web::Query<Info>) -> impl Responder {
     for s in result {
         response_text.push_str(&s);
     }
+    println!("{response_text}");
     HttpResponse::Ok().append_header(("Access-Control-Allow-Origin", "*")).body(response_text)
 }
 
