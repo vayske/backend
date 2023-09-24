@@ -1,4 +1,4 @@
-use actix_web::{get, post, App, HttpRequest, HttpResponse, HttpServer, Responder};
+use actix_web::{get, post, App, web, HttpResponse, HttpServer, Responder};
 use actix_multipart::Multipart;
 use futures_util::TryStreamExt;
 use mime::{ Mime, IMAGE_PNG, IMAGE_JPEG, IMAGE_GIF, IMAGE_BMP };
@@ -9,8 +9,8 @@ use tokio::{
 use redis;
 
 #[get("/search/{tags}")]
-async fn search_files(req: HttpRequest) -> impl Responder {
-    let tags: String = req.match_info().get("tags").unwrap().to_string();
+async fn search_files(path: web::Path<String>) -> impl Responder {
+    let tags: String = path.into_inner();
     println!("{tags}");
     let tag_list: Vec<&str> = tags.split_whitespace().collect();
     let mut response_text: String = "".to_owned();
