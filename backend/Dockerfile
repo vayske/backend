@@ -1,4 +1,4 @@
-FROM rust:1.72-alpine as build
+FROM rust:1.72 as build
 
 WORKDIR /usr/src/backend
 COPY . .
@@ -7,7 +7,7 @@ RUN mkdir -p /images
 
 RUN cargo install --path .
 
-FROM alpine:latest
+FROM gcr.io/distroless/cc-debian12
 
 COPY --from=build /usr/local/cargo/bin/backend /usr/local/bin/backend
 
