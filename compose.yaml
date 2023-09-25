@@ -3,6 +3,8 @@ services:
     image: ubuntu:22.04
     command:
       - "/bin/bash"
+    depends_on:
+      - backend
   frontend:
     build:
       context: ./frontend
