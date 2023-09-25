@@ -87,6 +87,7 @@ fn search_images(tags: &str) -> Vec<String> {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    println!("RUST: Backend Launching...");
     HttpServer::new(|| {
         App::new()
             .service(search_files)
