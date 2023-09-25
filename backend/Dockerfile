@@ -1,4 +1,4 @@
-FROM rust:1.72
+FROM rust:1.72 as build
 
 WORKDIR /usr/src/backend
 COPY . .
@@ -6,5 +6,9 @@ COPY . .
 RUN mkdir -p /images
 
 RUN cargo install --path .
+
+FROM alpine:latest
+
+COPY --from=build /usr/local/cargo/bin/backend /usr/local/bin/backend
 
 CMD ["backend"]

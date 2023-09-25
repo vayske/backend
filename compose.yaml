@@ -1,4 +1,9 @@
 services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - 80:80
   backend:
     build:
       context: ./backend
@@ -6,8 +11,6 @@ services:
       - ./storage/images:/images
     depends_on:
       - redis
-    ports:
-      - 8000:5000
   redis:
     image: redis
     command:
