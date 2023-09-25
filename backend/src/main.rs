@@ -89,7 +89,7 @@ async fn main() -> std::io::Result<()> {
             .service(save_files)
             .service(actix_files::Files::new("/images", "/images").show_files_listing())
     })
-    .bind(("192.168.1.10", 8080))?
+    .bind(("localhost", 8080))?
     .run()
     .await
 }

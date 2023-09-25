@@ -6,6 +6,8 @@ services:
       - ./storage/images:/images
     depends_on:
       - redis
+    ports:
+      - 8080:8080
   redis:
     image: redis
     command:
