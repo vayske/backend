@@ -1,4 +1,6 @@
 services:
+  ubuntu:
+    image: ubuntu
   frontend:
     build:
       context: ./frontend
