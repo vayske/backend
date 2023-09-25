@@ -26,6 +26,10 @@ async fn search_files(info: web::Query<Info>) -> impl Responder {
     HttpResponse::Ok().append_header(("Access-Control-Allow-Origin", "*")).body(response_text.trim_end().to_string())
 }
 
+async fn manual_hello() -> impl Responder {
+    HttpResponse::Ok().body("Hey there!")
+}
+
 #[post("/upload")]
 async fn save_files(mut payload: Multipart) -> impl Responder {
     let legal_filetypes: [Mime; 4] = [IMAGE_BMP, IMAGE_GIF, IMAGE_JPEG, IMAGE_PNG];
@@ -88,8 +92,9 @@ async fn main() -> std::io::Result<()> {
             .service(search_files)
             .service(save_files)
             .service(actix_files::Files::new("/images", "/images").show_files_listing())
+            .route("/hey", web::get().to(manual_hello))
     })
-    .bind(("localhost", 8080))?
+    .bind(("localhost", 5000))?
     .run()
     .await
 }
