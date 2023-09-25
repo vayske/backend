@@ -11,4 +11,6 @@ FROM gcr.io/distroless/cc-debian12
 
 COPY --from=build /usr/local/cargo/bin/backend /usr/local/bin/backend
 
+EXPOSE 5000
+
 CMD ["backend"]
