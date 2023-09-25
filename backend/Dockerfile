@@ -7,7 +7,7 @@ RUN mkdir -p /images
 
 RUN cargo install --path .
 
-FROM alpine:latest
+FROM gcr.io/distroless/cc-debian10
 
 COPY --from=build /usr/local/cargo/bin/backend /usr/local/bin/backend
 
