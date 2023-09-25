@@ -1,5 +1,8 @@
 import React, { useState, useRef } from "react";
 
+const ADDR = "localhost";
+const PORT = "8080";
+
 function DragDropFile({ handleFile }) {
   const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef(null);
@@ -133,7 +136,7 @@ function SearchImage({ resetAll }) {
 
   const handleClick = () => {
     if (tagRef.current.value) {
-      fetch('http://backend:5000/search?' + new URLSearchParams({tags: tagRef.current.value}), {
+      fetch(`http://${ADDR}:${PORT}/search?` + new URLSearchParams({tags: tagRef.current.value}), {
         method: 'GET'
       }).then(response => response.text())
         .then(text => {
@@ -159,7 +162,7 @@ function SearchImage({ resetAll }) {
     for (const image of result) {
       imageList.push(
         <li key={image}>
-          <img src={"http://backend:5000/images/" + image} alt={image} />
+          <img src={`http://${ADDR}:${PORT}/images/` + image} alt={image} />
         </li>
       )
     }
@@ -182,7 +185,7 @@ function UploadToServer({ tags, setResult }) {
         fd.append(tag, file);
       }
     }
-    fetch('http://backend:5000/upload', {
+    fetch(`http://${ADDR}:${PORT}/upload`, {
       method: 'POST',
       body: fd,
     }).then(response => response.text())

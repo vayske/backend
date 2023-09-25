@@ -1,18 +1,14 @@
 services:
-  ubuntu:
-    image: ubuntu:22.04
-    command:
-      - "/bin/bash"
-    depends_on:
-      - backend
-  frontend:
+  react-app:
     build:
       context: ./frontend
     ports:
       - 80:80
-  backend:
+  rust-actix:
     build:
       context: ./backend
+    ports:
+      - 8080:8080
     volumes:
       - ./storage/images:/images
     depends_on:
