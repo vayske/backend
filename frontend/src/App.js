@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 
-const ADDR = "localhost";
+const ADDR = "192.168.1.10";
 const PORT = "8080";
 
 function DragDropFile({ handleFile }) {
