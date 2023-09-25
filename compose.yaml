@@ -1,11 +1,15 @@
 services:
-  web:
+  backend:
     build:
-      context: .
-      args:
-        PYTHON_VERSION: 3.11
-        USERNAME: "${USER}"
-    ports:
-      - "8000:5000"
+      context: ./backend
+    volumes:
+      - ./storage/images:/images
+    depends_on:
+      - redis
   redis:
-    image: "redis"
+    image: redis
+    command:
+      - "--save 60 1"
+      - "--loglevel warning"
+    volumes:
+      - ./storage/db:/data

@@ -29,7 +29,7 @@ async fn search_files(info: web::Query<Info>) -> impl Responder {
 #[post("/upload")]
 async fn save_files(mut payload: Multipart) -> impl Responder {
     let legal_filetypes: [Mime; 4] = [IMAGE_BMP, IMAGE_GIF, IMAGE_JPEG, IMAGE_PNG];
-    let dir: &str = "./images/";
+    let dir: &str = "/images/";
     let mut response_body: String = "".to_owned();
     loop {
         if let Ok(Some(mut field)) = payload.try_next().await {
@@ -61,7 +61,7 @@ async fn save_files(mut payload: Multipart) -> impl Responder {
 }
 
 fn save_tags(tags: &str, filename: &str) -> redis::RedisResult<()> {
-    let mut connection = redis::Client::open("redis://localhost:8082")
+    let mut connection = redis::Client::open("redis://redis:6379")
                                                         .expect("Invalid connection URL")
                                                         .get_connection()
                                                         .expect("failed to connect to Redis");
@@ -73,7 +73,7 @@ fn save_tags(tags: &str, filename: &str) -> redis::RedisResult<()> {
 }
 
 fn search_images(tags: &str) -> Vec<String> {
-    let mut connection = redis::Client::open("redis://localhost:8082")
+    let mut connection = redis::Client::open("redis://redis:6379")
                                                         .expect("Invalid connection URL")
                                                         .get_connection()
                                                         .expect("failed to connect to Redis");
@@ -87,7 +87,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .service(search_files)
             .service(save_files)
-            .service(actix_files::Files::new("/images", "./images").show_files_listing())
+            .service(actix_files::Files::new("/images", "/images").show_files_listing())
     })
     .bind(("192.168.1.10", 8080))?
     .run()
