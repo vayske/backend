@@ -16,4 +16,4 @@ WORKDIR /usr/share/nginx/html
 
 RUN rm -rf ./*
 
-COPY /app/build .
+COPY --from=build /app/build .
