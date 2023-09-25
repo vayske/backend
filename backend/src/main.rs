@@ -95,7 +95,7 @@ async fn main() -> std::io::Result<()> {
             .service(actix_files::Files::new("/images", "/images").show_files_listing())
             .route("/hey", web::get().to(manual_hello))
     })
-    .bind("0.0.0.0:5000")?
+    .bind(("localhost", 5000))?
     .run()
     .await
 }
