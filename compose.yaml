@@ -7,6 +7,8 @@ services:
   backend:
     build:
       context: ./backend
+    expose:
+      - 5000
     volumes:
       - ./storage/images:/images
     depends_on:
